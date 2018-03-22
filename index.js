@@ -18,6 +18,13 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
+    if (!session.privateConversationData[state]) {
+        session.privateConversationData[state] = {
+            stage: "StartGame",
+            level: 8
+        };
+    }
+
     session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
 });
 
