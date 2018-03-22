@@ -21,7 +21,8 @@ var bot = new builder.UniversalBot(connector, function (session) {
     if (!session.privateConversationData[state]) {
         session.privateConversationData[state] = {
             stage: "StartGame",
-            level: 8
+            level: 8,
+            objects: []
         };
     }
 
