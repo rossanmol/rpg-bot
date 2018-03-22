@@ -107,13 +107,24 @@ bot.dialog('Elevator_Fall_Death', function(session) {
 
 bot.dialog('Go_Floor_Seven', function(session) {
 
-    session.send(returnDescImage(`
-        The elevator door opens and you are met with a guttering stench that makes you feel
-        ill but you feel ill. You also discover that the elevator didn't stop on the 7th floor
-        and took you directly to the 7th. You figure you need a weapon to defend.
 
-        What do you do?
-    `, ["Take extiguisher", "Take calculator", "Take both", "Panic and Die"], session));
+    let msg = new builder.Message(session)
+        .text(`
+            You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
+            You remember that the elevator could not go to the floors below 6th.
+
+            Which floor do you go to?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Take extiguisher", "Take extiguisher"),
+                builder.CardAction.imBack(session, "Take calculator", "Take calculator"),
+                builder.CardAction.imBack(session, "Take both", "Take both"),
+                builder.CardAction.imBack(session, "Panic and Die", "Panic and Die")
+            ]
+        ));
+
+    session.send(msg);
 
     // - Expectation
     // : take extiguisher;     =Take_Extinguisher
@@ -125,8 +136,34 @@ bot.dialog('Go_Floor_Seven', function(session) {
     matches: 'Go_Floor_Seven'
 });
 
+bot.dialog('Take_Extinguisher', function(session) {
 
+    let msg = new builder.Message(session)
+        .text(`
+            You grab the extinguisher but the path to you right is blocked by a pile of dead bodies,
+            that where probably trying to escape. Some of them are beginning to move, the door infront of
+            you is unlocked and you run into it!
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Throw extinguisher", "Throw extinguisher"),
+                builder.CardAction.imBack(session, "Do nothing", "Do nothing"),
+                builder.CardAction.imBack(session, "Take both", "Take both"),
+                builder.CardAction.imBack(session, "Panic and Die", "Panic and Die")
+            ]
+        ));
 
+session.send(msg);
+
+    // - Expectation
+    // : take extiguisher;     =Take_Extinguisher
+    // : take calculator;      =Take_Calculator
+    // : take both;            =Take_Both_Weapons
+    // : Panic and Die;        =Jump_Death
+
+}).triggerAction({
+    matches: 'Go_Floor_Seven'
+});
 
 
 bot.dialog('Take_Card', function (session, args) {
@@ -160,9 +197,9 @@ bot.dialog('Start_Fourth_Third_Floor', function (session, args) {
 
         let msg = new builder.Message(session)
         .text(`
-        The 5th floor was hard enough but you manage to reach the 4th floor. You are fortunate to be close enough to the internal stairs of the 4th floor to the 3rd. Though you see from distance the CEO's office empty, full of food and some weapons.
+            The 5th floor was hard enough but you manage to reach the 4th floor. You are fortunate to be close enough to the internal stairs of the 4th floor to the 3rd. Though you see from distance the CEO's office empty, full of food and some weapons.
 
-        What do you do?
+            What do you do?
         `)
         .suggestedActions(builder.SuggestedActions.create(
             session, [
@@ -236,17 +273,4 @@ function reviewAsAttachment(review) {
         .title(review.title)
         .text(review.text)
         .images([new builder.CardImage().url(review.image)]);
-}
-
-function returnDescImage(desc, options, session) {
-
-    options.map(option => {
-        return builder.CardAction.imBack(session, option, option);
-    });
-
-    return new builder.Message(session)
-        .text(desc)
-        .suggestedActions(builder.SuggestedActions.create(
-            session, options
-        ));
 }
