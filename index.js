@@ -18,21 +18,9 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-<<<<<<< HEAD
     session.send(`
         Sorry I did not understand, type 'play a game' to begin.
     `, session.message.text);
-=======
-    if (!session.privateConversationData[state]) {
-        session.privateConversationData[state] = {
-            stage: "StartGame",
-            level: 8,
-            objects: []
-        };
-    }
-
-    session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
->>>>>>> 4cda2864028955a6767564c45ddb37717cb749ce
 });
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
@@ -52,7 +40,7 @@ bot.dialog('Start_Eight_Floor', function (session, args) {
         .suggestedActions(builder.SuggestedActions.create(
             session, [
                 builder.CardAction.imBack(session, "Run to the stairs", "Run to the stairs"),
-                builder.CardAction.imBack(session, "run to the elevator", "run to the elevator"),
+                builder.CardAction.imBack(session, "Run to the elevator", "Run to the elevator"),
                 builder.CardAction.imBack(session, "Take the card", "Take the card")
             ]
         ));
@@ -64,18 +52,70 @@ bot.dialog('Start_Eight_Floor', function (session, args) {
     // : Run to the elevator;  =Elevator_Open
     // : Take the card;        =Take_Card
 
-
 }).triggerAction({
     matches: 'Start_Eight_Floor'
 });
 
-
 bot.dialog('Elevator_Open', session => {
 
-    session.send('You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.');
+    let msg = new builder.Message(session)
+    .text(`
+        You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
+        You remember that the elevator could not go to the floors below 6th.
+
+        Which floor do you go to?
+    `)
+    .suggestedActions(builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.imBack(session, "Press 8", "Press 8"),
+            builder.CardAction.imBack(session, "Press 7", "Press 7"),
+            builder.CardAction.imBack(session, "Press Any", "Press Any")
+        ]
+    ));
+
+    // - Expectations
+    // : Press 8;              =Elevator_Does_Not_Move
+    // : Press 7;              =Go_Floor_Seven
+    // : Press Any;            =Elevator_Fall_Death
 
 }).triggerAction({
     matches: 'Elevator_Open'
+});
+
+bot.dialog('Elevator_Open', session => {
+
+    let msg = new builder.Message(session)
+    .text(`
+        You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
+        You remember that the elevator could not go to the floors below 6th.
+
+        Which floor do you go to?
+    `)
+    .suggestedActions(builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.imBack(session, "Press 8", "Press 8"),
+            builder.CardAction.imBack(session, "Press 7", "Press 7"),
+            builder.CardAction.imBack(session, "Press Any", "Press Any")
+        ]
+    ));
+
+    // - Expectations
+    // : Press 8;              =Elevator_Does_Not_Move
+    // : Press 7;              =Go_Floor_Seven
+    // : Press Any;            =Elevator_Fall_Death
+
+}).triggerAction({
+    matches: 'Elevator_Open'
+});
+
+bot.dialog('Elevator_Does_Not_Move', session => {
+
+    session.send(`
+        **DEAD**
+    `)
+
+}).triggerAction({
+    matches: 'Elevator_Does_Not_Move'
 });
 
 bot.dialog('Help', function (session) {
