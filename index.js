@@ -36,11 +36,19 @@ var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
-
+    if (!session.privateConversationData.state) {
+        session.privateConversationData.state = {
+            stage: "StartGame",
+            level: 8,
+            objects: []
+        };
+    }
     let msg = new builder.Message(session)
         .text(`
             You are now on the 8th Floor and you hear disgusting noises,
             you look around you and discover that the building has become infested with shambling and decaying zombies.
+
+            https://image.ibb.co/m3JOAH/1.gif
 
             What do you want to do?
         `)
@@ -207,11 +215,8 @@ bot.dialog('Throw_Fire_Extinguisher', function(session) {
     matches: 'Throw_Fire_Extinguisher'
 });
 
-
-
 bot.dialog('Take_Card', function (session, args) {
 
-    if (session.privateConversationData.state.level === 8) {
         session.privateConversationData.state.objects.push("card");
 
         let msg = new builder.Message(session)
@@ -228,9 +233,6 @@ bot.dialog('Take_Card', function (session, args) {
         ));
 
     session.send(msg);
-    } else {
-        session.send("You can't do that!");
-    }
 
 }).triggerAction({
     matches: 'Take_Card'
@@ -259,17 +261,74 @@ bot.dialog('Start_Fourth_Third_Floor', function (session, args) {
 
 bot.dialog('CEO_Death', function (session, args) {
 
-        let msg = new builder.Message(session)
-        .text(`
-        You carefully manage to enter CEO's office and you reach for the food where you are met with an angry Zombie CEO that fires you and then feast on your warm body!
+    let msg = new builder.Message(session)
+    .text(`
+    You carefully manage to enter CEO's office and you reach for the food where you are met with an angry Zombie CEO that fires you and then feast on your warm body!
 
-        You die!
-        `);
+    You die!
+    `);
 
-    session.send(msg);
+session.send(msg);
 
 }).triggerAction({
-    matches: 'CEO_Death'
+matches: 'CEO_Death'
+});
+
+bot.dialog('Go_To_Third_Floor', function (session, args) {
+
+    let msg = new builder.Message(session)
+    .text(`
+    You reach the stairs uneventfully and you reach the third floor. Before reaching the bottom you manage to see a flashing image of the CEO inside his office feasting on a corpse. Thank god you didn't go in!! You are in the 3rds floor kitchen and you hear hack and slash noises from the PO room.
+
+    What do you do?
+    `)
+    .suggestedActions(builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.imBack(session, "Go to PO room", "Go to PO room"),
+            builder.CardAction.imBack(session, "Proceed", "Proceed"),
+        ]
+    ));
+
+session.send(msg);
+
+}).triggerAction({
+matches: 'Go_To_Third_Floor'
+});
+
+bot.dialog('Go_To_PO', function (session, args) {
+
+    let msg = new builder.Message(session)
+    .text(`
+    You enter the PO room and you see Valeria killing the last remaining PO zombie with ease! You are awed with the expert use of the sword and firearms that you ask for help! She is extending her arms with a gift!
+
+    What do you do?
+    `)
+    .suggestedActions(builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.imBack(session, "Get the gift", "Get the gift"),
+            builder.CardAction.imBack(session, "Leave the room", "Leave the room"),
+        ]
+    ));
+
+session.send(msg);
+
+}).triggerAction({
+matches: 'Go_To_PO'
+});
+
+bot.dialog('Death_Devs', function (session, args) {
+
+    let msg = new builder.Message(session)
+    .text(`
+    You enter the Devs room and you are greeded with a swarm of zombie devs attacking you from all sides, if only you had something to scare all the pesky Zombie Devs!!
+
+    You Die!
+    `);
+
+session.send(msg);
+
+}).triggerAction({
+matches: 'Death_Devs'
 });
 
 bot.dialog('Help', function (session, args) {
