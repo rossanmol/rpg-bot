@@ -36,11 +36,19 @@ var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
-
+    if (!session.privateConversationData.state) {
+        session.privateConversationData.state = {
+            stage: "StartGame",
+            level: 8,
+            objects: []
+        };
+    }
     let msg = new builder.Message(session)
         .text(`
             You are now on the 8th Floor and you hear disgusting noises,
             you look around you and discover that the building has become infested with shambling and decaying zombies.
+
+            https://image.ibb.co/m3JOAH/1.gif
 
             What do you want to do?
         `)
@@ -125,13 +133,8 @@ bot.dialog('Go_Floor_Seven', function(session) {
     matches: 'Go_Floor_Seven'
 });
 
-
-
-
-
 bot.dialog('Take_Card', function (session, args) {
 
-    if (session.privateConversationData.state.level === 8) {
         session.privateConversationData.state.objects.push("card");
 
         let msg = new builder.Message(session)
@@ -148,9 +151,6 @@ bot.dialog('Take_Card', function (session, args) {
         ));
 
     session.send(msg);
-    } else {
-        session.send("You can't do that!");
-    }
 
 }).triggerAction({
     matches: 'Take_Card'
