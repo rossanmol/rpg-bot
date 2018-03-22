@@ -82,31 +82,6 @@ bot.dialog('Elevator_Open', session => {
     matches: 'Elevator_Open'
 });
 
-bot.dialog('Elevator_Open', session => {
-
-    let msg = new builder.Message(session)
-    .text(`
-        You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
-        You remember that the elevator could not go to the floors below 6th.
-
-        Which floor do you go to?
-    `)
-    .suggestedActions(builder.SuggestedActions.create(
-        session, [
-            builder.CardAction.imBack(session, "Press 8", "Press 8"),
-            builder.CardAction.imBack(session, "Press 7", "Press 7"),
-            builder.CardAction.imBack(session, "Press Any", "Press Any")
-        ]
-    ));
-
-    // - Expectations
-    // : Press 8;              =Elevator_Does_Not_Move
-    // : Press 7;              =Go_Floor_Seven
-    // : Press Any;            =Elevator_Fall_Death
-
-}).triggerAction({
-    matches: 'Elevator_Open'
-});
 
 bot.dialog('Elevator_Does_Not_Move', session => {
 
