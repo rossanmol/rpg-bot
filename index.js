@@ -67,8 +67,8 @@ bot.dialog('Elevator_Open', function(session) {
         `)
         .suggestedActions(builder.SuggestedActions.create(
             session, [
-                builder.CardAction.imBack(session, "Press 8", "Press 8"),
-                builder.CardAction.imBack(session, "Press 7", "Press 7"),
+                builder.CardAction.imBack(session, "Go to eight floor", "Go to eight floor"),
+                builder.CardAction.imBack(session, "Go to seventh floor", "Go to seventh floor"),
                 builder.CardAction.imBack(session, "Press Any", "Press Any")
             ]
         ));
@@ -85,15 +85,41 @@ bot.dialog('Elevator_Open', function(session) {
 });
 
 
-bot.dialog('Elevator_Does_Not_Move', session => {
-
-    session.send(`
-        **DEAD**
-    `)
-
+bot.dialog('Elevator_Does_Not_Move', function(session) {
+    session.send(`**DEAD**`);
 }).triggerAction({
     matches: 'Elevator_Does_Not_Move'
 });
+
+bot.dialog('Elevator_Fall_Death', function(session) {
+    session.send(`**DEAD**`);
+
+}).triggerAction({
+    matches: 'Elevator_Fall_Death'
+});
+
+bot.dialog('Go_Floor_Seven', function(session) {
+
+    session.send(returnDescImage(`
+        The elevator door opens and you are met with a guttering stench that makes you feel
+        ill but you feel ill. You also discover that the elevator didn't stop on the 7th floor
+        and took you directly to the 7th. You figure you need a weapon to defend.
+
+        What do you do?
+    `, ["Take extiguisher", "Take calculator", "Take both", "Panic and Die"], session));
+
+    // - Expectation
+    // : take extiguisher;     =Take_Extinguisher
+    // : take calculator;      =Take_Calculator
+    // : take both;            =Take_Both_Weapons
+    // : Panic and Die;        =Jump_Death
+
+}).triggerAction({
+    matches: 'Go_Floor_Seven'
+});
+
+
+
 
 bot.dialog('Help', function (session) {
     session.endDialog('Hi! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
@@ -139,4 +165,17 @@ function reviewAsAttachment(review) {
         .title(review.title)
         .text(review.text)
         .images([new builder.CardImage().url(review.image)]);
+}
+
+function returnDescImage(desc, options, session) {
+
+    options.map(option => {
+        return builder.CardAction.imBack(session, option, option);
+    });
+
+    return new builder.Message(session)
+        .text(desc)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, options
+        ));
 }
