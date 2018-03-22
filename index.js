@@ -18,15 +18,24 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send(`
-        Sorry I did not understand, type 'play a game' to begin.
-    `, session.message.text);
+    if (!session.privateConversationData.state) {
+        session.privateConversationData.state = {
+            stage: "StartGame",
+            level: 8,
+            objects: []
+        };
+    }
+
+    session.beginDialog('Start_Eight_Floor');
 });
+
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
 // This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
 var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
+
+const CARD = "card";
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
 
@@ -95,7 +104,20 @@ bot.dialog('Elevator_Does_Not_Move', session => {
     matches: 'Elevator_Does_Not_Move'
 });
 
-bot.dialog('Help', function (session) {
+bot.dialog('Take_Card', function (session, args) {
+
+    if (session.privateConversationData.state.level === 8) {
+        session.privateConversationData.state.objects.push(CARD);
+        session.send("You took the card.");
+    } else {
+        session.send("You can't do that!");
+    }
+
+}).triggerAction({
+    matches: 'Take_Card'
+});
+
+bot.dialog('Help', function (session, args) {
     session.endDialog('Hi! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
 }).triggerAction({
     matches: 'Help'
