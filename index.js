@@ -18,9 +18,21 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
+<<<<<<< HEAD
     session.send(`
         Sorry I did not understand, type 'play a game' to begin.
     `, session.message.text);
+=======
+    if (!session.privateConversationData[state]) {
+        session.privateConversationData[state] = {
+            stage: "StartGame",
+            level: 8,
+            objects: []
+        };
+    }
+
+    session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+>>>>>>> 4cda2864028955a6767564c45ddb37717cb749ce
 });
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
