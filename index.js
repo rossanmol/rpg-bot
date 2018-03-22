@@ -18,7 +18,9 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send('Sorry, I did not understand \'%s\'. Type \'help\' if you need assistance.', session.message.text);
+    session.send(`
+        Sorry I did not understand, type 'play a game' to begin.
+    `, session.message.text);
 });
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
@@ -28,29 +30,35 @@ bot.recognizer(recognizer);
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
 
-    session.send(`
-        You are now on the 8th Floor and you hear disgusting noises,
-        you look around you and discover that the building has become infested with shambling and decaying zombies.
-    `);
-
     session.send('What do you want to do?');
 
+    let msg = new builder.Message(session)
+        .text(`
+            You are now on the 8th Floor and you hear disgusting noises,
+            you look around you and discover that the building has become infested with shambling and decaying zombies.
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Run to the stairs", "Run to the stairs"),
+                builder.CardAction.imBack(session, "run to the elevator", "run to the elevator"),
+                builder.CardAction.imBack(session, "Take the card", "Take the card")
+            ]
+        ));
+
+    session.send(msg);
+
+    // - Expectation
+    // : Run to the stairs;    =Stairs_Eight_Floor
+    // : Run to the elevator;  =Elevator_Open
+    // : Take the card;        =Take_Card
 
 
 }).triggerAction({
     matches: 'Start_Eight_Floor'
 });
 
-bot.dialog('Stairs_Eight_Floor', function (session, args) {
 
-    session.send('Welcome ... Lets begin');
-
-
-}).triggerAction({
-    matches: 'Stairs_Eight_Floor'
-});
-
-bot.dialog('Elevator_Open', () => {
+bot.dialog('Elevator_Open', session => {
 
     session.send('You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.');
 
@@ -84,7 +92,7 @@ if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
 }
 
 // Helpers
-function hotelAsAttachment(hotel) {
+function addGifWithOptions(hotel) {
     return new builder.HeroCard()
         .title(hotel.name)
         .subtitle('%d stars. %d reviews. From $%d per night.', hotel.rating, hotel.numberOfReviews, hotel.priceStarting)
