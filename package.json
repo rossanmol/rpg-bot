@@ -1,0 +1,17 @@
+{
+  "name": "textrpgbot",
+  "version": "1.0.0",
+  "description": "OBG Hackathon Text RPG Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "The Avengers",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "botbuilder": "^3.14.1",
+    "dotenv-extended": "^2.0.1",
+    "restify": "^7.0.0"
+  }
+}
