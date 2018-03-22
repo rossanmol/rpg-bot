@@ -26,13 +26,22 @@ var bot = new builder.UniversalBot(connector, function (session) {
 var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
-bot.dialog('StartGame', function (session, args) {
+bot.dialog('Start_Eight_Floor', function (session, args) {
+
+    session.send('Welcome ... Lets begin');
+
+}).triggerAction({
+    matches: 'Stairs_Eight_Floor'
+});
+
+
+bot.dialog('Stairs_Eight_Floor', function (session, args) {
 
     session.send('Welcome ... Lets begin');
 
 
 }).triggerAction({
-    matches: 'StartGame'
+    matches: 'Stairs_Eight_Floor'
 });
 
 bot.dialog('Elevator_Open', () => {
