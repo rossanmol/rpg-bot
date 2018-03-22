@@ -28,12 +28,18 @@ bot.recognizer(recognizer);
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
 
-    session.send('Welcome ... Lets begin');
+    session.send(`
+        You are now on the 8th Floor and you hear disgusting noises,
+        you look around you and discover that the building has become infested with shambling and decaying zombies.
+    `);
+
+    session.send('What do you want to do?');
+
+
 
 }).triggerAction({
-    matches: 'Stairs_Eight_Floor'
+    matches: 'Start_Eight_Floor'
 });
-
 
 bot.dialog('Stairs_Eight_Floor', function (session, args) {
 
