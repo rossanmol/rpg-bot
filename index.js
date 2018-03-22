@@ -30,12 +30,12 @@ bot.recognizer(recognizer);
 
 bot.dialog('Start_Eight_Floor', function (session, args) {
 
-    session.send('What do you want to do?');
-
     let msg = new builder.Message(session)
         .text(`
             You are now on the 8th Floor and you hear disgusting noises,
             you look around you and discover that the building has become infested with shambling and decaying zombies.
+
+            What do you want to do?
         `)
         .suggestedActions(builder.SuggestedActions.create(
             session, [
@@ -56,22 +56,24 @@ bot.dialog('Start_Eight_Floor', function (session, args) {
     matches: 'Start_Eight_Floor'
 });
 
-bot.dialog('Elevator_Open', session => {
+bot.dialog('Elevator_Open', function(session) {
 
     let msg = new builder.Message(session)
-    .text(`
-        You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
-        You remember that the elevator could not go to the floors below 6th.
+        .text(`
+            You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.
+            You remember that the elevator could not go to the floors below 6th.
 
-        Which floor do you go to?
-    `)
-    .suggestedActions(builder.SuggestedActions.create(
-        session, [
-            builder.CardAction.imBack(session, "Press 8", "Press 8"),
-            builder.CardAction.imBack(session, "Press 7", "Press 7"),
-            builder.CardAction.imBack(session, "Press Any", "Press Any")
-        ]
-    ));
+            Which floor do you go to?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Press 8", "Press 8"),
+                builder.CardAction.imBack(session, "Press 7", "Press 7"),
+                builder.CardAction.imBack(session, "Press Any", "Press Any")
+            ]
+        ));
+
+    session.send(msg);
 
     // - Expectations
     // : Press 8;              =Elevator_Does_Not_Move
