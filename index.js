@@ -3,7 +3,6 @@ require('dotenv-extended').load();
 
 var builder = require('botbuilder');
 var restify = require('restify');
-var Store = require('./store');
 var spellService = require('./spell-service');
 
 // Setup Restify Server
@@ -32,23 +31,16 @@ bot.dialog('StartGame', function (session, args) {
     session.send('Welcome ... Lets begin');
 
 
-    // display something
-    // make a choice that includes next match and entity
-
-    // retrieve hotel name from matched entities
-    var hotelEntity = builder.EntityRecognizer.findEntity(args.intent.entities, 'Hotel');
-    if (hotelEntity) {
-        session.send('Looking for reviews of \'%s\'...', hotelEntity.entity);
-        Store.searchHotelReviews(hotelEntity.entity)
-            .then(function (reviews) {
-                var message = new builder.Message()
-                    .attachmentLayout(builder.AttachmentLayout.carousel)
-                    .attachments(reviews.map(reviewAsAttachment));
-                session.endDialog(message);
-            });
-    }
 }).triggerAction({
-    matches: 'ShowHotelsReviews'
+    matches: 'StartGame'
+});
+
+bot.dialog('Elevator_Open', () => {
+
+    session.send('You call the elevator, while waiting the noises become more and more aggressive. You hear the familiar voice of the elevator call and the doors opens.');
+
+}).triggerAction({
+    matches: 'Elevator_Open'
 });
 
 bot.dialog('Help', function (session) {
