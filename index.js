@@ -143,6 +143,10 @@ bot.dialog('Take_Extinguisher', function(session) {
             You grab the extinguisher but the path to you right is blocked by a pile of dead bodies,
             that where probably trying to escape. Some of them are beginning to move, the door infront of
             you is unlocked and you run into it!
+
+            The door behind closes shut and a heard of zombies slowly begin to move towards you. You try to open the door but it won't open.
+
+            What do you do?
         `)
         .suggestedActions(builder.SuggestedActions.create(
             session, [
@@ -162,8 +166,47 @@ session.send(msg);
     // : Panic and Die;        =Jump_Death
 
 }).triggerAction({
-    matches: 'Go_Floor_Seven'
+    matches: 'Take_Extinguisher'
 });
+
+bot.dialog('Zombie_Death', function(session) {
+    session.send(`**DEAD**`);
+
+}).triggerAction({
+    matches: 'Zombie_Death'
+});
+
+bot.dialog('Throw_Fire_Extinguisher', function(session) {
+
+    let msg = new builder.Message(session)
+    .text(`
+        You throw the fire extinguisher at the middle of the heard,
+        on impact the fire extinsguisher detonates clear the floow
+        from the decaying zombies. A path is cleared and you can make
+        your way to the next floow. On you way to the corridor you stop
+        by the kitchen and a zombie tries to attack you.
+        You see a knife and a pot of grass.
+
+        which one do you use to defend yourself>
+    `)
+    .suggestedActions(builder.SuggestedActions.create(
+        session, [
+            builder.CardAction.imBack(session, "take knife", "take knife"),
+            builder.CardAction.imBack(session, "take pot", "take pot"),
+            builder.CardAction.imBack(session, "do nothing", "do nothing"),
+        ]
+    ));
+
+    session.send(msg);
+
+    session.send(`
+
+    `);
+
+}).triggerAction({
+    matches: 'Throw_Fire_Extinguisher'
+});
+
 
 
 bot.dialog('Take_Card', function (session, args) {
