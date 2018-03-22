@@ -129,6 +129,42 @@ bot.dialog('Take_Card', function (session, args) {
     matches: 'Take_Card'
 });
 
+bot.dialog('Start_Fourth_Third_Floor', function (session, args) {
+
+        let msg = new builder.Message(session)
+        .text(`
+        The 5th floor was hard enough but you manage to reach the 4th floor. You are fortunate to be close enough to the internal stairs of the 4th floor to the 3rd. Though you see from distance the CEO's office empty, full of food and some weapons.
+        
+        What do you do?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Go to CEO room", "Go to CEO room"),
+                builder.CardAction.imBack(session, "Go to stairs", "Go to stairs"),
+            ]
+        ));
+
+    session.send(msg);
+
+}).triggerAction({
+    matches: 'Start_Fourth_Third_Floor'
+});
+
+bot.dialog('CEO_Death', function (session, args) {
+
+        let msg = new builder.Message(session)
+        .text(`
+        You carefully manage to enter CEO's office and you reach for the food where you are met with an angry Zombie CEO that fires you and then feast on your warm body!
+        
+        You die!
+        `);
+
+    session.send(msg);
+ 
+}).triggerAction({
+    matches: 'CEO_Death'
+});
+
 bot.dialog('Help', function (session, args) {
     session.endDialog('Hi! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
 }).triggerAction({
