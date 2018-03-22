@@ -18,10 +18,17 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 
 var bot = new builder.UniversalBot(connector, function (session) {
-    session.send(`
-        Sorry I did not understand, type 'play a game' to begin.
-    `, session.message.text);
+    if (!session.privateConversationData.state) {
+        session.privateConversationData.state = {
+            stage: "StartGame",
+            level: 8,
+            objects: []
+        };
+    }
+
+    session.beginDialog('Start_Eight_Floor');
 });
+
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
 // This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
@@ -121,7 +128,71 @@ bot.dialog('Go_Floor_Seven', function(session) {
 
 
 
-bot.dialog('Help', function (session) {
+
+bot.dialog('Take_Card', function (session, args) {
+
+    if (session.privateConversationData.state.level === 8) {
+        session.privateConversationData.state.objects.push("card");
+
+        let msg = new builder.Message(session)
+        .text(`
+            You took the card.
+
+            What do you want to do?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Run to the stairs", "Run to the stairs"),
+                builder.CardAction.imBack(session, "Run to the elevator", "Run to the elevator"),
+            ]
+        ));
+
+    session.send(msg);
+    } else {
+        session.send("You can't do that!");
+    }
+
+}).triggerAction({
+    matches: 'Take_Card'
+});
+
+bot.dialog('Start_Fourth_Third_Floor', function (session, args) {
+
+        let msg = new builder.Message(session)
+        .text(`
+        The 5th floor was hard enough but you manage to reach the 4th floor. You are fortunate to be close enough to the internal stairs of the 4th floor to the 3rd. Though you see from distance the CEO's office empty, full of food and some weapons.
+
+        What do you do?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Go to CEO room", "Go to CEO room"),
+                builder.CardAction.imBack(session, "Go to stairs", "Go to stairs"),
+            ]
+        ));
+
+    session.send(msg);
+
+}).triggerAction({
+    matches: 'Start_Fourth_Third_Floor'
+});
+
+bot.dialog('CEO_Death', function (session, args) {
+
+        let msg = new builder.Message(session)
+        .text(`
+        You carefully manage to enter CEO's office and you reach for the food where you are met with an angry Zombie CEO that fires you and then feast on your warm body!
+
+        You die!
+        `);
+
+    session.send(msg);
+
+}).triggerAction({
+    matches: 'CEO_Death'
+});
+
+bot.dialog('Help', function (session, args) {
     session.endDialog('Hi! Try asking me things like \'search hotels in Seattle\', \'search hotels near LAX airport\' or \'show me the reviews of The Bot Resort\'');
 }).triggerAction({
     matches: 'Help'
