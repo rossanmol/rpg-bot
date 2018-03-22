@@ -35,8 +35,6 @@ var bot = new builder.UniversalBot(connector, function (session) {
 var recognizer = new builder.LuisRecognizer(process.env.LUIS_MODEL_URL);
 bot.recognizer(recognizer);
 
-const CARD = "card";
-
 bot.dialog('Start_Eight_Floor', function (session, args) {
 
     let msg = new builder.Message(session)
@@ -107,8 +105,22 @@ bot.dialog('Elevator_Does_Not_Move', session => {
 bot.dialog('Take_Card', function (session, args) {
 
     if (session.privateConversationData.state.level === 8) {
-        session.privateConversationData.state.objects.push(CARD);
-        session.send("You took the card.");
+        session.privateConversationData.state.objects.push("card");
+
+        let msg = new builder.Message(session)
+        .text(`
+            You took the card.
+
+            What do you want to do?
+        `)
+        .suggestedActions(builder.SuggestedActions.create(
+            session, [
+                builder.CardAction.imBack(session, "Run to the stairs", "Run to the stairs"),
+                builder.CardAction.imBack(session, "Run to the elevator", "Run to the elevator"),
+            ]
+        ));
+
+    session.send(msg);
     } else {
         session.send("You can't do that!");
     }
